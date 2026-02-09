@@ -2,15 +2,15 @@ import discord
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import pytz
-from config import CHANNEL_ID, STUDY_TIME, DAYS_IN_WEEK, DURATION_TIME
+# from config import CHANNEL_ID, STUDY_TIME, DAYS_IN_WEEK, DURATION_TIME
 
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.cid = CHANNEL_ID 
-        self.st = STUDY_TIME
-        self.dur = DURATION_TIME
-        self.days = DAYS_IN_WEEK
+        # self.cid = CHANNEL_ID 
+        # self.st = STUDY_TIME
+        # self.dur = DURATION_TIME
+        # self.days = DAYS_IN_WEEK
         self.tz = pytz.timezone('America/Sao_Paulo')
         self.timer.start()
 
@@ -21,7 +21,7 @@ class Events(commands.Cog):
     async def timer(self):
             now = datetime.now(self.tz)
             at = now.strftime("%H:%M")
-            if not self.bot.enabled:
+            if not self.bot.state.enabled:
                 return
 
             print(f"[log] {at} - checking...")

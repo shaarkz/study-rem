@@ -3,6 +3,7 @@ import os
 import discord
 from discord.ext import commands
 from typing import Any
+from data.state import State
 
 try:
     from config import TOKEN 
@@ -12,7 +13,7 @@ except ImportError:
 class Bot(commands.Bot):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.enabled = False
+        # self.enabled = False
 
     async def setup_hook(self):
         for filename in os.listdir("./cogs"):
@@ -29,6 +30,14 @@ bot = Bot(
     command_prefix="n.",
     intents=intents,
     help_command=None
+)
+
+bot.state = State(
+	enabled = False,
+	channel_id = 1470468503323803830,
+	study_time = "17:30",
+	duration_time = 2,
+	days_in_week = [0, 1, 2, 3, 4]
 )
 
 @bot.event
