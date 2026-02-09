@@ -10,6 +10,10 @@ class TurnOff(commands.Cog):
 	async def off(self, interaction: discord.Interaction):
 		if not self.bot.enabled:
 			await interaction.response.send_message(f'Timer is alreay off dummy!')
+			return
 		else:
-			self.bot.enable = False
+			self.bot.enabled = False
 			await interaction.response.send_message(f'Timer just turned off! {self.bot.enabled}')
+			
+async def setup(bot):
+	await bot.add_cog(TurnOff(bot))

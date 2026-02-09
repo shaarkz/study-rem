@@ -19,47 +19,49 @@ class Events(commands.Cog):
 
     @tasks.loop(seconds=60)
     async def timer(self):
-        now = datetime.now(self.tz)
-        at = now.strftime("%H:%M")
+            now = datetime.now(self.tz)
+            at = now.strftime("%H:%M")
+            if not self.bot.enabled:
+                return
 
-        print(f"[log] {at} - checking...")
+            print(f"[log] {at} - checking...")
 
-        if now.weekday() not in self.days:
-            return
+            if now.weekday() not in self.days:
+                return
 
-        try:
-            target = datetime.strptime(self.st, "%H:%M")
-            t_min = (target - timedelta(minutes=10)).strftime("%H:%M")
-            t_end = (target + timedelta(hours=self.dur)).strftime("%H:%M")
-        except Exception as e:
-            print(f"[error] calculation: {e}")
-            return
+            try:
+                target = datetime.strptime(self.st, "%H:%M")
+                t_min = (target - timedelta(minutes=10)).strftime("%H:%M")
+                t_end = (target + timedelta(hours=self.dur)).strftime("%H:%M")
+            except Exception as e:
+                print(f"[error] calculation: {e}")
+                return
 
-        chan = self.bot.get_channel(self.cid)
-        if not chan:
-            print(f"[error] channel {self.cid} not found")
-            return
+            chan = self.bot.get_channel(self.cid)
+            if not chan:
+                print(f"[error] channel {self.cid} not found")
+                return
 
-        if at.endswith("0") or at.endswith("5"):
-             print(f"[info] st: {self.st} | t_min: {t_min} | t_end: {t_end}")
+            if at.endswith("0") or at.endswith("5"):
+                 print(f"[info] st: {self.st} | t_min: {t_min} | t_end: {t_end}")
 
-        try:
-            if at == t_min:
-                print(f"[bot] sending 10min alert")
-                await chan.send(f"🔔 **daq 10 minutos tropa** ajeita as coisas ai e vapo, o sofrimento começa às {self.STUDY_TIME}.\n@here")
+            try:
+                if at == t_min:
+                    print(f"[bot] sending 10min alert")
+                    await chan.send(f"🔔 **daq 10 minutos tropa** ajeita as coisas ai e vapo, o sofrimento começa às {self.st}.\n@here")
 
-            elif at == self.st:
-                print(f"[bot] sending start alert")
-                await chan.send(f"**AGORA TROPA AGORA VAO**, VEM PRA RESENHA FOCO.\n@everyone")
+                elif at == self.st:
+                    print(f"[bot] sending start alert")
+                    await chan.send(f"**AGORA TROPA AGORA VAO**, VEM PRA RESENHA FOCO.\n@everyone")
 
-            elif at == t_end:
-                print(f"[bot] sending end alert")
-                await chan.send("✅ **Cabo guys!** Por hoje é só, podem rlx ai ja!")
-                
-        except discord.Forbidden:
-            print("[error] missing permissions")
-        except Exception as e:
-            print(f"[error] {e}")
+                elif at == t_end:
+                    print(f"[bot] sending end alert")
+                    await chan.send("✅ **Cabo guys!** Por hoje é só, podem rlx ai ja!")
+
+            except discord.Forbidden:
+                print("[error] missing permissions")
+            except Exception as e:
+                print(f"[error] {e}")
 
     @timer.before_loop
     async def before_timer(self):
