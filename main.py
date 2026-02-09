@@ -12,6 +12,7 @@ except ImportError:
 class Bot(commands.Bot):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
+        self.enabled = False
 
     async def setup_hook(self):
         for filename in os.listdir("./cogs"):
