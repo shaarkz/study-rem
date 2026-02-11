@@ -37,7 +37,7 @@ bot = Bot(
 
 bot.state = State(
     enabled=False,
-    channel_id=1470468503323803830,
+    channel_id=None,
     study_time=None,
     duration_time=None,
     schedule={}

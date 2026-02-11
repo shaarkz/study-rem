@@ -12,17 +12,25 @@ class TurnOn(commands.Cog):
         description="Activate the study timer."
     )
     async def on(self, interaction: discord.Interaction):
-
+    
         state = self.bot.state
-
-        if state.enabled:
+    
+        if not state.channel_id or not state.study_time or not state.duration_time:
             await interaction.response.send_message(
-                "The study timer is already running."
+                "You must configure the timer first using /set.",
+                ephemeral=True
             )
             return
-
+    
+        if state.enabled:
+            await interaction.response.send_message(
+                "The study timer is already running.",
+                ephemeral=True
+            )
+            return
+    
         state.enabled = True
-
+    
         await interaction.response.send_message(
             "Study timer activated successfully."
         )
