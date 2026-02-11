@@ -22,6 +22,7 @@ class TurnOff(commands.Cog):
             return
 
         state.enabled = False
+        print("[SYSTEM] Study system DISABLED via /off command.")
 
         await interaction.response.send_message(
             "Study timer has been turned off."

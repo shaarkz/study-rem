@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from data.state import State
 
 
 class TurnOn(commands.Cog):
@@ -30,6 +31,8 @@ class TurnOn(commands.Cog):
             return
     
         state.enabled = True
+        print("[SYSTEM] Study system ENABLED via /set command.")
+        print(f"[SYSTEM] Schedule configured: {state.study_time} for {state.duration} hour(s).")
     
         await interaction.response.send_message(
             "Study timer activated successfully."

@@ -96,7 +96,8 @@ class Events(commands.Cog):
     async def before_timer(self):
         print("[SYSTEM] Waiting for bot readiness...")
         await self.bot.wait_until_ready()
-        print("[SYSTEM] Timer successfully started.")
+        print("[SYSTEM] Background timer loop initialized.")
+        print("[SYSTEM] Study system is currently DISABLED.")
 
 
 async def setup(bot):

@@ -42,13 +42,15 @@ class Set(commands.Cog):
         state.duration_time = duration
         
         state.enabled = True
+        print("[SYSTEM] Study system ENABLED via /set command.")
+        print(f"[SYSTEM] Schedule configured: {study_time} for {duration} hour(s).")
+
 
         await interaction.response.send_message(
             f"✅ **Study timer configured!**\n\n"
             f"Channel: {channel.mention}\n"
             f"Start time: {study_time} (24h format)\n"
             f"Duration: {duration} hour(s)\n\n"
-            f"Now use `/on` to activate it."
         )
 
 
