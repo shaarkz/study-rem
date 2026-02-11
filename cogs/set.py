@@ -10,7 +10,7 @@ class Set(commands.Cog):
 
     @app_commands.command(
         name="set",
-        description="Configure the study timer parameters."
+        description="Configure the study timer. Example: /set #channel 18:30 2(hours)"
     )
     async def set(
         self,
@@ -42,11 +42,11 @@ class Set(commands.Cog):
         state.duration_time = duration
 
         await interaction.response.send_message(
-            f"✅ **Timer configured successfully!**\n\n"
-            f"📍 Channel: {channel.mention}\n"
-            f"⏰ Study time: {study_time}\n"
-            f"🕒 Duration: {duration} hour(s)\n\n"
-            f"Use `/on` to start the timer."
+            f"✅ **Study timer configured!**\n\n"
+            f"Channel: {channel.mention}\n"
+            f"Start time: {study_time} (24h format)\n"
+            f"Duration: {duration} hour(s)\n\n"
+            f"Now use `/on` to activate it."
         )
 
 

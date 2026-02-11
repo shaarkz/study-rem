@@ -35,13 +35,7 @@ bot = Bot(
     help_command=None
 )
 
-bot.state = State(
-    enabled=False,
-    channel_id=None,
-    study_time=None,
-    duration_time=None,
-    schedule={}
-)
+bot.state = State()
 
 
 @bot.event

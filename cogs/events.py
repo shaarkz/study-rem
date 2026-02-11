@@ -24,8 +24,8 @@ class Events(commands.Cog):
 
         print(f"[TIMER] {current_time} | Checking schedule...")
 
-        if now.weekday() not in state.days_in_week:
-            return
+        # if now.weekday() not in state.days_in_week:
+        #     return
 
         try:
             target_time = datetime.strptime(state.study_time, "%H:%M")
