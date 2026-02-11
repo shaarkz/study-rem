@@ -4,3 +4,6 @@ class State:
         self.study_time = None
         self.duration_time = None
         self.enabled = False
+        self.last_start_date = None
+        self.last_reminder_date = None
+        self.last_end_date = None

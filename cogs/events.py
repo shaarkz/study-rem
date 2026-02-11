@@ -13,22 +13,24 @@ class Events(commands.Cog):
     def cog_unload(self):
         self.timer.cancel()
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(minutes=1)
     async def timer(self):
         state = self.bot.state
         now = datetime.now(self.tz)
         current_time = now.strftime("%H:%M")
+        today = now.date()
 
         if not state.enabled:
             return
 
-        print(f"[TIMER] {current_time} | Checking schedule...")
+        if not state.study_time or not state.duration_time or not state.channel_id:
+            return
 
-        # if now.weekday() not in state.days_in_week:
-        #     return
+        print(f"[TIMER] {current_time} | Checking schedule...")
 
         try:
             target_time = datetime.strptime(state.study_time, "%H:%M")
+
             ten_minutes_before = (
                 target_time - timedelta(minutes=10)
             ).strftime("%H:%M")
@@ -47,39 +49,46 @@ class Events(commands.Cog):
             print(f"[ERROR] Channel ID {state.channel_id} not found.")
             return
 
-        if current_time.endswith(("0", "5")):
-            print(
-                f"[INFO] Study: {state.study_time} | "
-                f"Reminder: {ten_minutes_before} | "
-                f"End: {end_time}"
-            )
-
         try:
             if current_time == ten_minutes_before:
+                if state.last_reminder_date == today:
+                    return
+
+                state.last_reminder_date = today
+
                 print("[EVENT] Sending 10-minute reminder.")
                 await channel.send(
                     f"🔔 **Faltam 10 minutos para o estudo!**\n"
-                    f"Organize seu material e agiliza ai mancho.\n"
-                    f"Começa às **{state.study_time}**.\n@here"
+                    f"Prepare seu material. Se ajeita ai mancho.\n"
+                    f"Início às **{state.study_time}**.\n@here"
                 )
 
             elif current_time == state.study_time:
+                if state.last_start_date == today:
+                    return
+
+                state.last_start_date = today
+
                 print("[EVENT] Sending study start message.")
                 await channel.send(
-                    "**Hora de estudar!**\n"
-                    "Foco total agora. PODEMOS MUITO PODEMOS MAIS.\n@everyone"
+                    "**Hora de estudar!** 📚\n"
+                    "Foco total agora, **PODEMOS MUITO PODEMOS MAIS**.\n@everyone"
                 )
 
-            # Fim do estudo
             elif current_time == end_time:
+                if state.last_end_date == today:
+                    return
+
+                state.last_end_date = today
+
                 print("[EVENT] Sending study end message.")
                 await channel.send(
                     "**Sessão finalizada!**\n"
-                    "Bom trabalho hoje. Descansem!"
+                    "Bom trabalho hoje."
                 )
 
         except discord.Forbidden:
-            print("[ERROR] Missing permissions to send messages.")
+            print("[ERROR] Missing permission to send messages.")
         except Exception as e:
             print(f"[ERROR] Unexpected error: {e}")
 
