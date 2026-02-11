@@ -40,6 +40,8 @@ class Set(commands.Cog):
         state.channel_id = channel.id
         state.study_time = study_time
         state.duration_time = duration
+        
+        state.enabled = True
 
         await interaction.response.send_message(
             f"✅ **Study timer configured!**\n\n"
