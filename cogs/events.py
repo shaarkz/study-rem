@@ -2,72 +2,93 @@ import discord
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import pytz
-# from config import CHANNEL_ID, STUDY_TIME, DAYS_IN_WEEK, DURATION_TIME
+
 
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # self.cid = CHANNEL_ID 
-        # self.st = STUDY_TIME
-        # self.dur = DURATION_TIME
-        # self.days = DAYS_IN_WEEK
-        self.tz = pytz.timezone('America/Sao_Paulo')
+        self.tz = pytz.timezone("America/Sao_Paulo")
         self.timer.start()
 
     def cog_unload(self):
         self.timer.cancel()
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(seconds=30)
     async def timer(self):
-            now = datetime.now(self.tz)
-            at = now.strftime("%H:%M")
-            if not self.bot.state.enabled:
-                return
+        state = self.bot.state
+        now = datetime.now(self.tz)
+        current_time = now.strftime("%H:%M")
 
-            print(f"[log] {at} - checking...")
+        if not state.enabled:
+            return
 
-            if now.weekday() not in self.days:
-                return
+        print(f"[TIMER] {current_time} | Checking schedule...")
 
-            try:
-                target = datetime.strptime(self.st, "%H:%M")
-                t_min = (target - timedelta(minutes=10)).strftime("%H:%M")
-                t_end = (target + timedelta(hours=self.dur)).strftime("%H:%M")
-            except Exception as e:
-                print(f"[error] calculation: {e}")
-                return
+        if now.weekday() not in state.days_in_week:
+            return
 
-            chan = self.bot.get_channel(self.cid)
-            if not chan:
-                print(f"[error] channel {self.cid} not found")
-                return
+        try:
+            target_time = datetime.strptime(state.study_time, "%H:%M")
+            ten_minutes_before = (
+                target_time - timedelta(minutes=10)
+            ).strftime("%H:%M")
 
-            if at.endswith("0") or at.endswith("5"):
-                 print(f"[info] st: {self.st} | t_min: {t_min} | t_end: {t_end}")
+            end_time = (
+                target_time + timedelta(hours=state.duration_time)
+            ).strftime("%H:%M")
 
-            try:
-                if at == t_min:
-                    print(f"[bot] sending 10min alert")
-                    await chan.send(f"🔔 **daq 10 minutos tropa** ajeita as coisas ai e vapo, o sofrimento começa às {self.st}.\n@here")
+        except Exception as e:
+            print(f"[ERROR] Time calculation failed: {e}")
+            return
 
-                elif at == self.st:
-                    print(f"[bot] sending start alert")
-                    await chan.send(f"**AGORA TROPA AGORA VAO**, VEM PRA RESENHA FOCO.\n@everyone")
+        channel = self.bot.get_channel(state.channel_id)
 
-                elif at == t_end:
-                    print(f"[bot] sending end alert")
-                    await chan.send("✅ **Cabo guys!** Por hoje é só, podem rlx ai ja!")
+        if not channel:
+            print(f"[ERROR] Channel ID {state.channel_id} not found.")
+            return
 
-            except discord.Forbidden:
-                print("[error] missing permissions")
-            except Exception as e:
-                print(f"[error] {e}")
+        if current_time.endswith(("0", "5")):
+            print(
+                f"[INFO] Study: {state.study_time} | "
+                f"Reminder: {ten_minutes_before} | "
+                f"End: {end_time}"
+            )
+
+        try:
+            if current_time == ten_minutes_before:
+                print("[EVENT] Sending 10-minute reminder.")
+                await channel.send(
+                    f"🔔 **Faltam 10 minutos para o estudo!**\n"
+                    f"Organize seu material e agiliza ai mancho.\n"
+                    f"Começa às **{state.study_time}**.\n@here"
+                )
+
+            elif current_time == state.study_time:
+                print("[EVENT] Sending study start message.")
+                await channel.send(
+                    "**Hora de estudar!**\n"
+                    "Foco total agora. PODEMOS MUITO PODEMOS MAIS.\n@everyone"
+                )
+
+            # Fim do estudo
+            elif current_time == end_time:
+                print("[EVENT] Sending study end message.")
+                await channel.send(
+                    "**Sessão finalizada!**\n"
+                    "Bom trabalho hoje. Descansem!"
+                )
+
+        except discord.Forbidden:
+            print("[ERROR] Missing permissions to send messages.")
+        except Exception as e:
+            print(f"[ERROR] Unexpected error: {e}")
 
     @timer.before_loop
     async def before_timer(self):
-        print("[system] waiting for readiness...")
+        print("[SYSTEM] Waiting for bot readiness...")
         await self.bot.wait_until_ready()
-        print("[system] timer started")
+        print("[SYSTEM] Timer successfully started.")
+
 
 async def setup(bot):
     await bot.add_cog(Events(bot))
