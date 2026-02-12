@@ -10,7 +10,7 @@ DEFAULT_WEEK_SCHEDULE = {
     0: "18:00",  # Monday
     1: "19:00",  # Tuesday
     2: "18:30",  # Wednesday
-    3: "14:09",  # Thursday
+    3: "15:14",  # Thursday
     4: "17:30",  # Friday
     5: "16:00",  # Saturday
     6: "15:30",  # Sunday
