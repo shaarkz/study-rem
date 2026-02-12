@@ -19,17 +19,23 @@ class Events(commands.Cog):
         now = datetime.now(self.tz)
         current_time = now.strftime("%H:%M")
         today = now.date()
+        weekday = now.weekday()
 
         if not state.enabled:
             return
 
-        if not state.study_time or not state.duration_time or not state.channel_id:
+        if not state.channel_id or not state.duration_time:
             return
 
-        print(f"[TIMER] {current_time} | Checking schedule...")
+        if weekday not in state.week_schedule:
+            return
+
+        study_time = state.week_schedule[weekday]
+
+        print(f"[TIMER] {current_time} | Checking schedule for weekday {weekday}")
 
         try:
-            target_time = datetime.strptime(state.study_time, "%H:%M")
+            target_time = datetime.strptime(study_time, "%H:%M")
 
             ten_minutes_before = (
                 target_time - timedelta(minutes=10)
@@ -63,7 +69,7 @@ class Events(commands.Cog):
                     f"Início às **{state.study_time}**.\n@here"
                 )
 
-            elif current_time == state.study_time:
+            elif current_time == study_time:
                 if state.last_start_date == today:
                     return
 
