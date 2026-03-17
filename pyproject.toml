@@ -1,0 +1,10 @@
+[project]
+name = "study-rem"
+version = "0.1.0"
+description = "Just a basic bot made for reminding you of your study schedule so you can stay on track :D Good luck!"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "discord-py>=2.7.1",
+    "pytz>=2026.1.post1",
+]
